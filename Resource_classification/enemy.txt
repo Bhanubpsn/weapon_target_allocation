@@ -1,0 +1,13 @@
+100 defense 200
+500 building 0
+150 building 0
+300 defense 500
+50 building 0
+150 defense 200
+420 defense 700
+240 defense 400
+230 defense 790
+200 building 0
+340 defense 200
+100 building 0
+150 defense 200
