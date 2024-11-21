@@ -44,7 +44,13 @@ void solve() {
         allies_resources
     );
 
-    
+    vector<vector<pair<ll,long double>>> probabilities_of_attack = computation.compute_probabilities(
+        enemy_resource_under_allies_range,
+        enemy_resources,
+        allies_resources,
+        cordinates_enemey,
+        cordinates_allies
+    );
     
 }
 
