@@ -31,11 +31,11 @@ void solve() {
     int number_of_allies = cordinates_allies.size();
 
     // Getting the info about the enemy and allies resources
-    vector<Enemy_Resource> enemy_resources(number_of_enemy);
-    vector<Allies_Resource> allies_resources(number_of_allies);
+    vector<Enemy_Resource> enemy_resources;
+    vector<Allies_Resource> allies_resources;
 
-    input.read_enemy_resource("Resource_classification\enemy.txt", enemy_resources);
-    input.read_allies_resource("Resource_classification\allies.txt",allies_resources);
+    input.read_enemy_resource("Resource_classification/enemy.txt", enemy_resources);
+    input.read_allies_resource("Resource_classification/allies.txt",allies_resources);
 
     vector<vector<ll>> enemy_resource_under_allies_range = computation.enemy_under_attack_range(
         cordinates_enemey,
@@ -51,6 +51,7 @@ void solve() {
         cordinates_enemey,
         cordinates_allies
     );
+
     
     for(auto& it : probabilities_of_attack){
         sort(it.begin(),it.end(),[&](pair<ll,long double> a,pair<ll,long double> b){
@@ -113,6 +114,51 @@ void solve() {
     cout<<"Damage : "<<map3.second<<endl;
     cout<<"\n\n";
 
+    auto save_output_to_file = [&]()->void{
+        std::ofstream output_file("output.txt");
+        for (int i = 0; i < map_enemy_targets_1.size(); i++) {
+            output_file << i << " : ";
+            for (auto& it : map_enemy_targets_1[i]) output_file << it << " ";
+            output_file << std::endl;
+        }
+        output_file << "Resource Used : " << map1.first << std::endl;
+        output_file << "Damage : " << map1.second << std::endl;
+        output_file << "\n\n";
+
+        for (int i = 0; i < map_enemy_targets_2.size(); i++) {
+            output_file << i << " : ";
+            for (auto& it : map_enemy_targets_2[i]) output_file << it << " ";
+            output_file << std::endl;
+        }
+        output_file << "Resource Used : " << map2.first << std::endl;
+        output_file << "Damage : " << map2.second << std::endl;
+        output_file << "\n\n";
+
+        for (int i = 0; i < map_enemy_targets_3.size(); i++) {
+            output_file << i << " : ";
+            for (auto& it : map_enemy_targets_3[i]) output_file << it << " ";
+            output_file << std::endl;
+        }
+        output_file << "Resource Used : " << map3.first << std::endl;
+        output_file << "Damage : " << map3.second << std::endl;
+        output_file << "\n\n";
+        output_file.close();
+    };
+
+    auto save_probabilities_to_file = [&]()->void{
+        std::ofstream output_file("probabilities.txt");
+        for (int i = 0; i < probabilities_of_attack.size(); i++) {
+            output_file << i << " -> " << std::endl;
+            for (auto& it : probabilities_of_attack[i]) {
+                output_file << it.first << " , " << it.second << std::endl;
+            }
+            output_file << std::endl;
+        }
+
+        output_file.close();
+    };
+    save_probabilities_to_file();
+    save_output_to_file();
 }
 
 int main() {

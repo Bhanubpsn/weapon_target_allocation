@@ -14,10 +14,10 @@ class Computation{
  
         // Function to get the enemy resource that can be targetted via a given allies resource
         vector<vector<ll>> enemy_under_attack_range(
-            vector<pair<ll,ll>> &enemy_cord,
-            vector<pair<ll,ll>> &allies_cord,
-            vector<Enemy_Resource> &enemy_resoruce,
-            vector<Allies_Resource> &allies_resource
+            vector<pair<ll,ll>>& enemy_cord,
+            vector<pair<ll,ll>>& allies_cord,
+            vector<Enemy_Resource>& enemy_resoruce,
+            vector<Allies_Resource>& allies_resource
             ){
             
             int n_enemy = enemy_cord.size();
@@ -34,7 +34,7 @@ class Computation{
                                            (curr_enemy_cord.second - curr_allies_cord.second)*(curr_enemy_cord.second - curr_allies_cord.second);
                     
                     distance = pow(distance,0.5);
-                    if(distance < allies_resource[i].attack_range && allies_resource[i].damage_value >= enemy_resoruce[j].defensive_value){
+                    if(distance < allies_resource[i].attack_range && allies_resource[i].damage_value > enemy_resoruce[j].defensive_value){
                         targets[i].push_back(j);
                     }
                 }
@@ -46,14 +46,15 @@ class Computation{
         // Function to get the probabilitiy of the enemy resources to be targetted by the allies resources depeding on factors
         vector<vector<pair<ll,long double>>> compute_probabilities(
             vector<vector<ll>>& enemy_resource_under_allies_range,
-            vector<Enemy_Resource> &enemy_resoruce,
-            vector<Allies_Resource> &allies_resource,
-            vector<pair<ll,ll>> &enemy_cord,
-            vector<pair<ll,ll>> &allies_cord
+            vector<Enemy_Resource>& enemy_resoruce,
+            vector<Allies_Resource>& allies_resource,
+            vector<pair<ll,ll>>& enemy_cord,
+            vector<pair<ll,ll>>& allies_cord
         ){
             // Formula used : (resource of enemy)^2 * root(distance) * (damage - defense)
             int n_allies = enemy_resource_under_allies_range.size();
             vector<vector<pair<ll,long double>>> attack_probabilities(n_allies);
+
             auto probability = [&](vector<ll>& targets,int index)-> vector<pair<ll,long double>>{
                 vector<long double> curr_score;
                 long double total_score = 0;
@@ -78,6 +79,9 @@ class Computation{
                 if((int)curr_targets.size()){
                     attack_probabilities[i] = probability(curr_targets,i);
                 }
+                else{
+                    attack_probabilities[i] = {};
+                }
             }
 
             return attack_probabilities;
@@ -85,8 +89,8 @@ class Computation{
 
         vector<vector<ll>> map_enemy_targets_closest(
             vector<vector<pair<ll,long double>>>& attack_probabilities,
-            vector<pair<ll,ll>> &enemy_cord,
-            vector<pair<ll,ll>> &allies_cord
+            vector<pair<ll,ll>>& enemy_cord,
+            vector<pair<ll,ll>>& allies_cord
         ){
             ll n_allies = attack_probabilities.size();
             ll n_enemy = enemy_cord.size();
@@ -100,6 +104,7 @@ class Computation{
                 for(auto& it : a.second){
                     enemies.push_back(it.first);
                 }
+                if(enemies.size() == 0) return 1e18;
                 int allies_index = a.first;
                 ll total_distance = 0;
                 for(auto& ind : enemies){
@@ -117,23 +122,25 @@ class Computation{
             });
 
             ll index =0;
-            vector<ll> counter_of_allies(n_allies,0);
             unordered_set<ll> enemy_set;
             vector<vector<ll>> map(n_allies);
-            while(enemy_set.size() != n_enemy){
-                if(index == n_allies) index = 0;
+            while (enemy_set.size() < n_enemy) {
+                index = (index % n_allies);
                 ll curr_allies = allies_enemy_pair[index].first;
-                vector<pair<ll,long double>> enemy_targets = allies_enemy_pair[index].second;
-                ll curr_counter = counter_of_allies[curr_allies];
-                if(curr_counter >= enemy_targets.size()){
+                vector<pair<ll, long double>> enemy_targets = allies_enemy_pair[index].second;
+                
+                if(enemy_targets.size() == 0){
                     index++; continue;
                 }
 
-                if(enemy_set.find(enemy_targets[curr_counter].first) != enemy_set.end()){
-                    map[curr_allies].push_back(enemy_targets[curr_counter].first);
-                    enemy_set.insert(enemy_targets[curr_counter].first);
+                for(auto& it : enemy_targets) {
+                    if(enemy_set.find(it.first) == enemy_set.end()){
+                        map[curr_allies].push_back(it.first);
+                        enemy_set.insert(it.first);
+                        break;
+                    }
                 }
-                counter_of_allies[curr_allies]++; index++;
+                index++;
             }
             
             return map;
@@ -141,8 +148,8 @@ class Computation{
 
         vector<vector<ll>> map_enemy_targets_farthest(
             vector<vector<pair<ll,long double>>>& attack_probabilities,
-            vector<pair<ll,ll>> &enemy_cord,
-            vector<pair<ll,ll>> &allies_cord
+            vector<pair<ll,ll>>& enemy_cord,
+            vector<pair<ll,ll>>& allies_cord
         ){
             ll n_allies = attack_probabilities.size();
             ll n_enemy = enemy_cord.size();
@@ -156,6 +163,7 @@ class Computation{
                 for(auto& it : a.second){
                     enemies.push_back(it.first);
                 }
+                if(enemies.size() == 0) return -1e18;
                 int allies_index = a.first;
                 ll total_distance = 0;
                 for(auto& ind : enemies){
@@ -173,23 +181,25 @@ class Computation{
             });
 
             ll index =0;
-            vector<ll> counter_of_allies(n_allies,0);
             unordered_set<ll> enemy_set;
             vector<vector<ll>> map(n_allies);
-            while(enemy_set.size() != n_enemy){
-                if(index == n_allies) index = 0;
+            while (enemy_set.size() < n_enemy) {
+                index = (index % n_allies);
                 ll curr_allies = allies_enemy_pair[index].first;
-                vector<pair<ll,long double>> enemy_targets = allies_enemy_pair[index].second;
-                ll curr_counter = counter_of_allies[curr_allies];
-                if(curr_counter >= enemy_targets.size()){
+                vector<pair<ll, long double>> enemy_targets = allies_enemy_pair[index].second;
+                
+                if(enemy_targets.size() == 0){
                     index++; continue;
                 }
 
-                if(enemy_set.find(enemy_targets[curr_counter].first) != enemy_set.end()){
-                    map[curr_allies].push_back(enemy_targets[curr_counter].first);
-                    enemy_set.insert(enemy_targets[curr_counter].first);
+                for(auto& it : enemy_targets) {
+                    if(enemy_set.find(it.first) == enemy_set.end()){
+                        map[curr_allies].push_back(it.first);
+                        enemy_set.insert(it.first);
+                        break;
+                    }
                 }
-                counter_of_allies[curr_allies]++; index++;
+                index++;
             }
             
             return map;
@@ -197,8 +207,8 @@ class Computation{
 
         vector<vector<ll>> map_enemy_targets_powerful(
             vector<vector<pair<ll,long double>>>& attack_probabilities,
-            vector<pair<ll,ll>> &enemy_cord,
-            vector<Allies_Resource> &allies_resource
+            vector<pair<ll,ll>>& enemy_cord,
+            vector<Allies_Resource>& allies_resource
         ){
             ll n_allies = attack_probabilities.size();
             ll n_enemy = enemy_cord.size();
@@ -208,27 +218,29 @@ class Computation{
             } 
 
             sort(allies_enemy_pair.begin(),allies_enemy_pair.end(),[&](pair<ll,vector<pair<ll,long double>>> a,pair<ll,vector<pair<ll,long double>>> b){
-                allies_resource[a.first].damage_value > allies_resource[b.first].damage_value;
+                return allies_resource[a.first].damage_value > allies_resource[b.first].damage_value;
             });
 
             ll index =0;
-            vector<ll> counter_of_allies(n_allies,0);
             unordered_set<ll> enemy_set;
             vector<vector<ll>> map(n_allies);
-            while(enemy_set.size() != n_enemy){
-                if(index == n_allies) index = 0;
+            while (enemy_set.size() < n_enemy) {
+                index = (index % n_allies);
                 ll curr_allies = allies_enemy_pair[index].first;
-                vector<pair<ll,long double>> enemy_targets = allies_enemy_pair[index].second;
-                ll curr_counter = counter_of_allies[curr_allies];
-                if(curr_counter >= enemy_targets.size()){
+                vector<pair<ll, long double>> enemy_targets = allies_enemy_pair[index].second;
+                
+                if(enemy_targets.size() == 0){
                     index++; continue;
                 }
 
-                if(enemy_set.find(enemy_targets[curr_counter].first) != enemy_set.end()){
-                    map[curr_allies].push_back(enemy_targets[curr_counter].first);
-                    enemy_set.insert(enemy_targets[curr_counter].first);
+                for(auto& it : enemy_targets) {
+                    if(enemy_set.find(it.first) == enemy_set.end()){
+                        map[curr_allies].push_back(it.first);
+                        enemy_set.insert(it.first);
+                        break;
+                    }
                 }
-                counter_of_allies[curr_allies]++; index++;
+                index++;
             }
             
             return map;
@@ -237,8 +249,8 @@ class Computation{
         // Function to calculate the effectiveness of the mapping
         pair<ll,ll> compute_effectiveness(
             vector<vector<ll>>& map,
-            vector<Enemy_Resource> &enemy_resoruce,
-            vector<Allies_Resource> &allies_resource
+            vector<Enemy_Resource>& enemy_resoruce,
+            vector<Allies_Resource>& allies_resource
         ){
             ll resource_used = 0, damage_done = 0;
             for(int i=0; i<map.size(); i++){

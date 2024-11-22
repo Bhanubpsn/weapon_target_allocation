@@ -13,6 +13,7 @@ class Enemy_Resource{
         string resource_type;
         ll defensive_value;
 
+        Enemy_Resource() : resource_value(0), resource_type(""), defensive_value(0) {}
         Enemy_Resource(ll val,string type,ll defense){
             this->resource_value = val;
             this->resource_type = type;

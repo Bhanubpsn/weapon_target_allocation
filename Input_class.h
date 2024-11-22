@@ -27,7 +27,7 @@ class Input{
             infile.close();
         }
 
-        void read_enemy_resource(const string &filename, vector<Enemy_Resource> &resouce) {
+        void read_enemy_resource(const string &filename, vector<Enemy_Resource>& resouce) {
             ifstream infile(filename);
             
             ll resouce_value,defense_value;

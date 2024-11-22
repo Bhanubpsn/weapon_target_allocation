@@ -14,6 +14,7 @@ class Allies_Resource{
         ll attack_range;
         ll resource_value;
 
+        Allies_Resource() : damage_value(0), resource_type(""), attack_range(0), resource_value(0) {}
         Allies_Resource(ll damage,string type,ll range,ll resource){
             this->damage_value = damage;
             this->resource_type = type;
