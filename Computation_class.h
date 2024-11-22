@@ -83,6 +83,173 @@ class Computation{
             return attack_probabilities;
         }
 
+        vector<vector<ll>> map_enemy_targets_closest(
+            vector<vector<pair<ll,long double>>>& attack_probabilities,
+            vector<pair<ll,ll>> &enemy_cord,
+            vector<pair<ll,ll>> &allies_cord
+        ){
+            ll n_allies = attack_probabilities.size();
+            ll n_enemy = enemy_cord.size();
+            vector<pair<ll,vector<pair<ll,long double>>>> allies_enemy_pair(n_allies);
+            for(int i=0;i<n_allies; i++){
+                allies_enemy_pair[i] = {i,attack_probabilities[i]};
+            } 
+
+            auto compute_total_distance = [&](pair<ll,vector<pair<ll,long double>>>& a)-> ll {
+                vector<ll> enemies;
+                for(auto& it : a.second){
+                    enemies.push_back(it.first);
+                }
+                int allies_index = a.first;
+                ll total_distance = 0;
+                for(auto& ind : enemies){
+                    ll curr_distance = pow((allies_cord[allies_index].first - enemy_cord[ind].first),2) + pow((allies_cord[allies_index].second - enemy_cord[ind].second),2);
+                    curr_distance = pow(curr_distance,0.5);
+                    total_distance += curr_distance;
+                }
+                return total_distance;
+            };
+
+            sort(allies_enemy_pair.begin(),allies_enemy_pair.end(),[&](pair<ll,vector<pair<ll,long double>>> a,pair<ll,vector<pair<ll,long double>>> b){
+                ll dist_a = compute_total_distance(a);
+                ll dist_b = compute_total_distance(b); 
+                return dist_a < dist_b;
+            });
+
+            ll index =0;
+            vector<ll> counter_of_allies(n_allies,0);
+            unordered_set<ll> enemy_set;
+            vector<vector<ll>> map(n_allies);
+            while(enemy_set.size() != n_enemy){
+                if(index == n_allies) index = 0;
+                ll curr_allies = allies_enemy_pair[index].first;
+                vector<pair<ll,long double>> enemy_targets = allies_enemy_pair[index].second;
+                ll curr_counter = counter_of_allies[curr_allies];
+                if(curr_counter >= enemy_targets.size()){
+                    index++; continue;
+                }
+
+                if(enemy_set.find(enemy_targets[curr_counter].first) != enemy_set.end()){
+                    map[curr_allies].push_back(enemy_targets[curr_counter].first);
+                    enemy_set.insert(enemy_targets[curr_counter].first);
+                }
+                counter_of_allies[curr_allies]++; index++;
+            }
+            
+            return map;
+        }
+
+        vector<vector<ll>> map_enemy_targets_farthest(
+            vector<vector<pair<ll,long double>>>& attack_probabilities,
+            vector<pair<ll,ll>> &enemy_cord,
+            vector<pair<ll,ll>> &allies_cord
+        ){
+            ll n_allies = attack_probabilities.size();
+            ll n_enemy = enemy_cord.size();
+            vector<pair<ll,vector<pair<ll,long double>>>> allies_enemy_pair(n_allies);
+            for(int i=0;i<n_allies; i++){
+                allies_enemy_pair[i] = {i,attack_probabilities[i]};
+            } 
+
+            auto compute_total_distance = [&](pair<ll,vector<pair<ll,long double>>>& a)-> ll {
+                vector<ll> enemies;
+                for(auto& it : a.second){
+                    enemies.push_back(it.first);
+                }
+                int allies_index = a.first;
+                ll total_distance = 0;
+                for(auto& ind : enemies){
+                    ll curr_distance = pow((allies_cord[allies_index].first - enemy_cord[ind].first),2) + pow((allies_cord[allies_index].second - enemy_cord[ind].second),2);
+                    curr_distance = pow(curr_distance,0.5);
+                    total_distance += curr_distance;
+                }
+                return total_distance;
+            };
+
+            sort(allies_enemy_pair.begin(),allies_enemy_pair.end(),[&](pair<ll,vector<pair<ll,long double>>> a,pair<ll,vector<pair<ll,long double>>> b){
+                ll dist_a = compute_total_distance(a);
+                ll dist_b = compute_total_distance(b); 
+                return dist_a > dist_b;
+            });
+
+            ll index =0;
+            vector<ll> counter_of_allies(n_allies,0);
+            unordered_set<ll> enemy_set;
+            vector<vector<ll>> map(n_allies);
+            while(enemy_set.size() != n_enemy){
+                if(index == n_allies) index = 0;
+                ll curr_allies = allies_enemy_pair[index].first;
+                vector<pair<ll,long double>> enemy_targets = allies_enemy_pair[index].second;
+                ll curr_counter = counter_of_allies[curr_allies];
+                if(curr_counter >= enemy_targets.size()){
+                    index++; continue;
+                }
+
+                if(enemy_set.find(enemy_targets[curr_counter].first) != enemy_set.end()){
+                    map[curr_allies].push_back(enemy_targets[curr_counter].first);
+                    enemy_set.insert(enemy_targets[curr_counter].first);
+                }
+                counter_of_allies[curr_allies]++; index++;
+            }
+            
+            return map;
+        }
+
+        vector<vector<ll>> map_enemy_targets_powerful(
+            vector<vector<pair<ll,long double>>>& attack_probabilities,
+            vector<pair<ll,ll>> &enemy_cord,
+            vector<Allies_Resource> &allies_resource
+        ){
+            ll n_allies = attack_probabilities.size();
+            ll n_enemy = enemy_cord.size();
+            vector<pair<ll,vector<pair<ll,long double>>>> allies_enemy_pair(n_allies);
+            for(int i=0;i<n_allies; i++){
+                allies_enemy_pair[i] = {i,attack_probabilities[i]};
+            } 
+
+            sort(allies_enemy_pair.begin(),allies_enemy_pair.end(),[&](pair<ll,vector<pair<ll,long double>>> a,pair<ll,vector<pair<ll,long double>>> b){
+                allies_resource[a.first].damage_value > allies_resource[b.first].damage_value;
+            });
+
+            ll index =0;
+            vector<ll> counter_of_allies(n_allies,0);
+            unordered_set<ll> enemy_set;
+            vector<vector<ll>> map(n_allies);
+            while(enemy_set.size() != n_enemy){
+                if(index == n_allies) index = 0;
+                ll curr_allies = allies_enemy_pair[index].first;
+                vector<pair<ll,long double>> enemy_targets = allies_enemy_pair[index].second;
+                ll curr_counter = counter_of_allies[curr_allies];
+                if(curr_counter >= enemy_targets.size()){
+                    index++; continue;
+                }
+
+                if(enemy_set.find(enemy_targets[curr_counter].first) != enemy_set.end()){
+                    map[curr_allies].push_back(enemy_targets[curr_counter].first);
+                    enemy_set.insert(enemy_targets[curr_counter].first);
+                }
+                counter_of_allies[curr_allies]++; index++;
+            }
+            
+            return map;
+        }
+
+        // Function to calculate the effectiveness of the mapping
+        pair<ll,ll> compute_effectiveness(
+            vector<vector<ll>>& map,
+            vector<Enemy_Resource> &enemy_resoruce,
+            vector<Allies_Resource> &allies_resource
+        ){
+            ll resource_used = 0, damage_done = 0;
+            for(int i=0; i<map.size(); i++){
+                resource_used += (allies_resource[i].resource_value * (ll)map[i].size());
+                for(auto& ind : map[i]){
+                    damage_done += (enemy_resoruce[ind].resource_value);
+                }
+            }
+            return {resource_used, damage_done};
+        }
+
 };
 
 #endif
