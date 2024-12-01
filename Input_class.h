@@ -48,7 +48,7 @@ class Input{
         void read_allies_resource(const string &filename, vector<Allies_Resource> &resouce) {
             ifstream infile(filename);
             
-            ll damage,range,resource_value;
+            ll damage,range,resource_value,instances;
             string type;
 
             if (!infile.is_open()) {
@@ -56,8 +56,8 @@ class Input{
                 return;
             }
 
-            while (infile>>damage>>type>>range>>resource_value) {
-                Allies_Resource allies(damage,type,range,resource_value);
+            while (infile>>damage>>type>>range>>resource_value>>instances) {
+                Allies_Resource allies(damage,type,range,resource_value,instances);
                 resouce.push_back(allies);
             }
             infile.close();

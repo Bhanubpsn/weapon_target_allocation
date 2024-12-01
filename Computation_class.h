@@ -90,7 +90,8 @@ class Computation{
         vector<vector<ll>> map_enemy_targets_closest(
             vector<vector<pair<ll,long double>>>& attack_probabilities,
             vector<pair<ll,ll>>& enemy_cord,
-            vector<pair<ll,ll>>& allies_cord
+            vector<pair<ll,ll>>& allies_cord,
+            vector<Allies_Resource> allies_resource
         ){
             ll n_allies = attack_probabilities.size();
             ll n_enemy = enemy_cord.size();
@@ -134,9 +135,10 @@ class Computation{
                 }
 
                 for(auto& it : enemy_targets) {
-                    if(enemy_set.find(it.first) == enemy_set.end()){
+                    if(enemy_set.find(it.first) == enemy_set.end() && allies_resource[curr_allies].resource_instances > 0){
                         map[curr_allies].push_back(it.first);
                         enemy_set.insert(it.first);
+                        allies_resource[curr_allies].resource_instances--;
                         break;
                     }
                 }
@@ -149,7 +151,8 @@ class Computation{
         vector<vector<ll>> map_enemy_targets_farthest(
             vector<vector<pair<ll,long double>>>& attack_probabilities,
             vector<pair<ll,ll>>& enemy_cord,
-            vector<pair<ll,ll>>& allies_cord
+            vector<pair<ll,ll>>& allies_cord,
+            vector<Allies_Resource> allies_resource
         ){
             ll n_allies = attack_probabilities.size();
             ll n_enemy = enemy_cord.size();
@@ -193,9 +196,10 @@ class Computation{
                 }
 
                 for(auto& it : enemy_targets) {
-                    if(enemy_set.find(it.first) == enemy_set.end()){
+                    if(enemy_set.find(it.first) == enemy_set.end() && allies_resource[curr_allies].resource_instances > 0){
                         map[curr_allies].push_back(it.first);
                         enemy_set.insert(it.first);
+                        allies_resource[curr_allies].resource_instances--;
                         break;
                     }
                 }
@@ -208,7 +212,7 @@ class Computation{
         vector<vector<ll>> map_enemy_targets_powerful(
             vector<vector<pair<ll,long double>>>& attack_probabilities,
             vector<pair<ll,ll>>& enemy_cord,
-            vector<Allies_Resource>& allies_resource
+            vector<Allies_Resource> allies_resource
         ){
             ll n_allies = attack_probabilities.size();
             ll n_enemy = enemy_cord.size();
@@ -234,9 +238,10 @@ class Computation{
                 }
 
                 for(auto& it : enemy_targets) {
-                    if(enemy_set.find(it.first) == enemy_set.end()){
+                    if(enemy_set.find(it.first) == enemy_set.end() && allies_resource[curr_allies].resource_instances > 0){
                         map[curr_allies].push_back(it.first);
                         enemy_set.insert(it.first);
+                        allies_resource[curr_allies].resource_instances--;
                         break;
                     }
                 }

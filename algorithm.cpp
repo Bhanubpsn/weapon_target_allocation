@@ -67,13 +67,15 @@ void solve() {
     vector<vector<ll>> map_enemy_targets_1 = computation.map_enemy_targets_closest(
         probabilities_of_attack,
         cordinates_enemey,
-        cordinates_allies
+        cordinates_allies,
+        allies_resources
     );
 
     vector<vector<ll>> map_enemy_targets_2 = computation.map_enemy_targets_farthest(
         probabilities_of_attack,
         cordinates_enemey,
-        cordinates_allies
+        cordinates_allies,
+        allies_resources
     );
 
     vector<vector<ll>> map_enemy_targets_3 = computation.map_enemy_targets_powerful(
